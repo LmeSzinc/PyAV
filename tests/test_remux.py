@@ -209,9 +209,7 @@ def test_remux_keeps_keyframe_with_none_dts() -> None:
 
     source.seek(0)
     output = io.BytesIO()
-    with av.open(source, "r") as input_, av.open(
-        output, "w", format="matroska"
-    ) as out:
+    with av.open(source, "r") as input_, av.open(output, "w", format="matroska") as out:
         in_video = input_.streams.video[0]
         out_video = out.add_stream_from_template(in_video)
         for packet in input_.demux(in_video):

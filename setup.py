@@ -21,8 +21,11 @@ FFMPEG_LIBRARIES = [
     "swresample",
 ]
 
-if (sys.implementation.name == "cpython" and (3, 14) > sys.version_info > (3, 11)
-        and os.environ.get("PYAV_NO_LIMITED_API") is None):
+if (
+    sys.implementation.name == "cpython"
+    and (3, 14) > sys.version_info > (3, 11)
+    and os.environ.get("PYAV_NO_LIMITED_API") is None
+):
     # PYAV_NO_LIMITED_API skips the abi3 build so the wheel can be built with
     # a 3.12/3.13 interpreter (used for local testing on Windows/mingw).
     py_limited_api = True

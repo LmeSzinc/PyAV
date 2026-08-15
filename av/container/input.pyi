@@ -13,6 +13,8 @@ from av.video.stream import VideoStream
 from .core import Container
 
 class InputContainer(Container):
+    def __enter__(self) -> InputContainer: ...
+
     start_time: int
     start_time_realtime: int | None
     duration: int | None

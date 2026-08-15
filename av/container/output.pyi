@@ -17,6 +17,7 @@ from .core import Container
 _StreamT = TypeVar("_StreamT", bound=Stream)
 
 class OutputContainer(Container):
+    def __enter__(self) -> OutputContainer: ...
     @overload
     def add_stream(
         self,
