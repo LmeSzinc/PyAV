@@ -1,5 +1,5 @@
 import io
-from typing import cast
+from typing import List, cast
 
 import av
 from av.codec.context import CodecContext
@@ -15,7 +15,7 @@ class TestSubtitle:
         subs: list[AssSubtitle] = []
         with av.open(path) as container:
             for packet in container.demux():
-                subs.extend(cast(list[AssSubtitle], packet.decode()))
+                subs.extend(cast(List[AssSubtitle], packet.decode()))
 
         assert len(subs) == 3
 
@@ -47,7 +47,7 @@ class TestSubtitle:
         subs: list[BitmapSubtitle] = []
         with av.open(path) as container:
             for packet in container.demux():
-                subs.extend(cast(list[BitmapSubtitle], packet.decode()))
+                subs.extend(cast(List[BitmapSubtitle], packet.decode()))
 
         assert len(subs) == 43
 
@@ -219,7 +219,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             assert len(input_container.streams.subtitles) == 1
             subs: list[AssSubtitle] = []
             for packet in input_container.demux():
-                subs.extend(cast(list[AssSubtitle], packet.decode()))
+                subs.extend(cast(List[AssSubtitle], packet.decode()))
             assert len(subs) == 3
             assert b"First subtitle" in subs[0].dialogue
             assert b"Second subtitle" in subs[1].dialogue

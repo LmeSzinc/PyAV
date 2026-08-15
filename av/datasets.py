@@ -3,7 +3,7 @@ import logging
 import os
 import shutil
 import sys
-from collections.abc import Iterator
+from typing import Iterator
 from urllib.request import urlopen
 
 log = logging.getLogger(__name__)

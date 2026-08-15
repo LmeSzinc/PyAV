@@ -1,3 +1,4 @@
+import sys
 from dataclasses import dataclass
 from enum import Flag, IntEnum, IntFlag
 
@@ -14,6 +15,9 @@ from cython.cimports.libc.stdint import uint8_t
 from cython.cimports.libc.string import memcpy, strcmp
 
 from av.error import InvalidDataError
+
+# dataclasses.slots is only supported on Python >= 3.10.
+_DATACLASS_SLOTS = {"slots": True} if sys.version_info >= (3, 10) else {}
 
 _cinit_sentinel = cython.declare(object, object())
 
@@ -129,7 +133,7 @@ class OptionFlags(IntFlag):
     CHILD_CONSTS = lib.AV_OPT_FLAG_CHILD_CONSTS
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, **_DATACLASS_SLOTS)
 class CodecOptionChoice:
     """A named value accepted by a codec option."""
 
@@ -137,7 +141,7 @@ class CodecOptionChoice:
     help: str
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, **_DATACLASS_SLOTS)
 class CodecOption:
     """Description of a generic or codec-specific option."""
 
@@ -152,7 +156,7 @@ class CodecOption:
     choices: tuple[CodecOptionChoice, ...]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, **_DATACLASS_SLOTS)
 class CodecOptionSet:
     """Generic and codec-specific options supported by a codec context."""
 

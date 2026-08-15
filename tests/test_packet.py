@@ -16,7 +16,7 @@ from .common import fate_suite, sandboxed
 class TestDataStreams:
     def generate_container_with_data_packets(self):
         file = io.BytesIO()
-        packet_datas_expected = dict[fractions.Fraction, bytes]()
+        packet_datas_expected = {}
 
         container = av.open(file, format="mp4", mode="w")
         stream = container.add_data_stream("bin_data")
@@ -49,7 +49,7 @@ class TestDataStreams:
     def test_data_packet_bytes(self):
         container, packet_datas_expected = self.generate_container_with_data_packets()
 
-        packet_datas = dict[fractions.Fraction, bytes]()
+        packet_datas = {}
         for packet in container.demux(container.streams.data[0]):
             if packet.pts is None:
                 continue

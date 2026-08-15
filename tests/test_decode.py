@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import io
 import os
@@ -15,7 +17,7 @@ from av.subtitles.subtitle import SubtitleSet
 from .common import TestCase, fate_suite
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def make_h264_test_video(path: str) -> None:
     """Generates a black H264 test video with two streams for testing hardware decoding."""
 

@@ -136,20 +136,18 @@ def test_add_stream_from_template_copies_time_base() -> None:
     the output stream's time_base stays as None
     """
     video_path = av.datasets.curated("pexels/time-lapse-video-of-night-sky-857195.mp4")
-    with (
-        av.open(video_path) as input_,
-        av.open(io.BytesIO(), "w", format="mp4") as output,
-    ):
+    with av.open(video_path) as input_, av.open(
+        io.BytesIO(), "w", format="mp4"
+    ) as output:
         in_video = input_.streams.video[0]
         out_video = output.add_stream_from_template(in_video)
         assert out_video.time_base is not None
         assert out_video.time_base == in_video.time_base
 
     audio_path = fate_suite("audio-reference/chorusnoise_2ch_44kHz_s16.wav")
-    with (
-        av.open(audio_path) as input_,
-        av.open(io.BytesIO(), "w", format="wav") as output,
-    ):
+    with av.open(audio_path) as input_, av.open(
+        io.BytesIO(), "w", format="wav"
+    ) as output:
         in_audio = input_.streams.audio[0]
         out_audio = output.add_stream_from_template(in_audio)
         assert out_audio.time_base is not None
@@ -211,10 +209,9 @@ def test_remux_keeps_keyframe_with_none_dts() -> None:
 
     source.seek(0)
     output = io.BytesIO()
-    with (
-        av.open(source, "r") as input_,
-        av.open(output, "w", format="matroska") as out,
-    ):
+    with av.open(source, "r") as input_, av.open(
+        output, "w", format="matroska"
+    ) as out:
         in_video = input_.streams.video[0]
         out_video = out.add_stream_from_template(in_video)
         for packet in input_.demux(in_video):

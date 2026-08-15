@@ -1,16 +1,20 @@
 [build-system]
-requires = ["setuptools>=77.0", "cython>=3.1.0,<4"]
+requires = [
+    "setuptools>=77.0 ; python_version >= '3.9'",
+    "setuptools>=68,<75.4 ; python_version < '3.9'",
+    "cython>=3.1.0,<4",
+]
 
 [project]
 name = "av"
 description = "Pythonic bindings for FFmpeg's libraries."
 readme = "README.md"
-license = "BSD-3-Clause"
+license = {text = "BSD-3-Clause"}
 authors = [
     {name = "WyattBlue", email = "wyattblue@auto-editor.com"},
     {name = "Jeremy Lainé", email = "jeremy.laine@m4x.org"},
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -20,6 +24,10 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Cython",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
