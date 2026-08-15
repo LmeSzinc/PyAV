@@ -1,2 +1,7 @@
 [build-system]
-requires = ["setuptools", "wheel", "cython"]
+requires = [
+    "setuptools",
+    "wheel",
+    # Cython 3.1+ requires Python >= 3.8, but we still build cp37 wheels.
+    "cython>=3.0,<3.1",
+]
