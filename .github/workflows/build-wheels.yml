@@ -69,9 +69,16 @@ jobs:
           # (universal binaries, x86_64 included) and link its libX11 into the
           # path the vendored FFmpeg expects; delocate then bundles the X11
           # dylibs into the wheel.
-          curl -sSL -o /tmp/XQuartz.pkg \
-            https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.6/XQuartz-2.8.6.pkg
-          sudo installer -pkg /tmp/XQuartz.pkg -target /
+          #
+          # XQuartz 2.8.0+ requires macOS 10.13, so delocate rejects its
+          # dylibs against the macosx_10_9 wheel target. XQuartz 2.7.11 is the
+          # last release supporting OS X 10.6.8+ (its dylibs are built with
+          # min target 10.6); it ships as a dmg containing XQuartz.pkg.
+          curl -sSL -o /tmp/XQuartz.dmg \
+            https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.7.11/XQuartz-2.7.11.dmg
+          sudo hdiutil attach /tmp/XQuartz.dmg -nobrowse -mountpoint /tmp/XQuartz-mnt
+          sudo installer -pkg "/tmp/XQuartz-mnt/XQuartz-2.7.11/XQuartz.pkg" -target /
+          sudo hdiutil detach /tmp/XQuartz-mnt
           sudo mkdir -p /usr/local/opt/libx11/lib
           sudo ln -sf /opt/X11/lib/libX11.6.dylib /usr/local/opt/libx11/lib/libX11.6.dylib
       - name: Install build tools
