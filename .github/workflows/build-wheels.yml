@@ -43,9 +43,12 @@ jobs:
       # skip tests when there are no binary wheels of numpy
       CIBW_TEST_SKIP: cp37-* pp* *_i686
       # cp37 wheels must stay on the manylinux2014 (glibc 2.17) baseline.
-      CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64
-      CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux2014_i686
-      CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64
+      # 2025.05.03-1 is the last image that still ships CPython 3.7 (dropped
+      # in pypa/manylinux on 2025-05-08); it also has yum pointed at the
+      # CentOS 7 vault mirror.
+      CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:2025.05.03-1
+      CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux2014_i686:2025.05.03-1
+      CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:2025.05.03-1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
