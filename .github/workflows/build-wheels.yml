@@ -60,6 +60,20 @@ jobs:
       - name: Install Rosetta (x86_64 builds on arm64 runners)
         if: matrix.os == 'macos-latest' && matrix.arch == 'x86_64'
         run: softwareupdate --install-rosetta --agree-to-license || true
+      - name: Install XQuartz for libX11 (x86_64 builds on arm64 runners)
+        if: matrix.os == 'macos-latest' && matrix.arch == 'x86_64'
+        run: |
+          # The vendored FFmpeg macosx_x86_64 build links against
+          # /usr/local/opt/libx11/lib/libX11.6.dylib (the Intel Homebrew
+          # prefix). arm64 runners have no Intel Homebrew, so install XQuartz
+          # (universal binaries, x86_64 included) and link its libX11 into the
+          # path the vendored FFmpeg expects; delocate then bundles the X11
+          # dylibs into the wheel.
+          curl -sSL -o /tmp/XQuartz.pkg \
+            https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.6/XQuartz-2.8.6.pkg
+          sudo installer -pkg /tmp/XQuartz.pkg -target /
+          sudo mkdir -p /usr/local/opt/libx11/lib
+          sudo ln -sf /opt/X11/lib/libX11.6.dylib /usr/local/opt/libx11/lib/libX11.6.dylib
       - name: Install build tools
         run: python -m pip install "cibuildwheel==2.21.3" delvewheel
       - name: Build wheels
