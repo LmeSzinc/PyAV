@@ -79,14 +79,14 @@ jobs:
             CIBW_MANYLINUX_X86_64_IMAGE=quay.io/pypa/manylinux_2_28_x86_64:2026.05.02-2 \
             CIBW_MANYLINUX_AARCH64_IMAGE=quay.io/pypa/manylinux_2_28_aarch64:2026.05.02-2 \
             cibuildwheel --output-dir dist
-            # musllinux_1_1 wheels (musl 1.1, Alpine < 3.12): the last image
-            # 2024.06.22-2 still ships cp38 and the vendored FFmpeg only
-            # references libc symbols already present in musl 1.1.24.
-            CIBW_BUILD="cp38-musllinux* cp39-musllinux* cp310-musllinux*" \
-            CIBW_MUSLLINUX_X86_64_IMAGE=quay.io/pypa/musllinux_1_1_x86_64:2024.06.22-2 \
-            CIBW_MUSLLINUX_AARCH64_IMAGE=quay.io/pypa/musllinux_1_1_aarch64:2024.06.22-2 \
-            cibuildwheel --output-dir dist
-            # musllinux_1_2 wheels
+            # musllinux_1_2 wheels. musllinux_1_1 (musl 1.1, Alpine < 3.12)
+            # is not buildable: the vendored FFmpeg's libx265 references
+            # std::__throw_bad_array_new_length, which the libstdc++ of
+            # Alpine < 3.19 (GCC < 13) does not export, so `import av` fails
+            # on musl 1.1. The musllinux_1_2 image ships a libstdc++ that
+            # exports it, and its bundled auditwheel (6.x) packs the musl
+            # libstdc++ into av.libs so the wheel does not depend on the
+            # system one.
             CIBW_BUILD="cp38-musllinux* cp39-musllinux* cp310-musllinux*" \
             CIBW_MUSLLINUX_X86_64_IMAGE=quay.io/pypa/musllinux_1_2_x86_64:2026.05.02-2 \
             CIBW_MUSLLINUX_AARCH64_IMAGE=quay.io/pypa/musllinux_1_2_aarch64:2026.05.02-2 \
