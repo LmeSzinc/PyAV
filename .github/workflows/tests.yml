@@ -65,14 +65,18 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --add-path C:\cibw\vendor\bin -w {dest_dir} {wheel}
           CIBW_TEST_COMMAND: mv {project}/av {project}/av.disabled && python -m pytest {package}/tests && mv {project}/av.disabled {project}/av
           CIBW_TEST_REQUIRES: pytest numpy
+          # numpy has no win_arm64 wheels before 2.3 (cp311+), and no
+          # musllinux wheels for cp38, so those builds cannot run the tests.
+          CIBW_TEST_SKIP: "cp38-win_arm64 cp39-win_arm64 cp310-win_arm64 cp38-musllinux_x86_64 cp38-musllinux_aarch64"
         run: |
           # cp38 needs cibuildwheel<4 (4.0 dropped CPython 3.8 builds) and a
-          # manylinux2014 image that still ships CPython 3.8.
+          # manylinux_2_28 image that still ships CPython 3.8 (the vendored
+          # FFmpeg requires GLIBC up to 2.27, beyond the manylinux2014 baseline).
           pip install "cibuildwheel==3.4.1" delvewheel
           if [ "$RUNNER_OS" = "Linux" ]; then
             CIBW_BUILD="cp38* cp39* cp310*" \
-            CIBW_MANYLINUX_X86_64_IMAGE=quay.io/pypa/manylinux2014_x86_64:2026.05.02-2 \
-            CIBW_MANYLINUX_AARCH64_IMAGE=quay.io/pypa/manylinux2014_aarch64:2026.05.02-2 \
+            CIBW_MANYLINUX_X86_64_IMAGE=quay.io/pypa/manylinux_2_28_x86_64:2026.05.02-2 \
+            CIBW_MANYLINUX_AARCH64_IMAGE=quay.io/pypa/manylinux_2_28_aarch64:2026.05.02-2 \
             CIBW_MUSLLINUX_X86_64_IMAGE=quay.io/pypa/musllinux_1_2_x86_64:2026.05.02-2 \
             CIBW_MUSLLINUX_AARCH64_IMAGE=quay.io/pypa/musllinux_1_2_aarch64:2026.05.02-2 \
             cibuildwheel --output-dir dist
