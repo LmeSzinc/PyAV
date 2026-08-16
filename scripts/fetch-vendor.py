@@ -21,6 +21,14 @@ def get_platform():
         prefix = "manylinux-" if platform.libc_ver()[0] == "glibc" else "musllinux-"
         return prefix + machine
     elif system == "Darwin":
+        # cibuildwheel cross-compiles the cp38 arm64 wheels from the x86_64
+        # CPython 3.8.10 installer (no arm64 installer exists for Python < 3.9).
+        # That interpreter runs under Rosetta, where platform.machine() reports
+        # "x86_64" even though the build target is arm64, so prefer ARCHFLAGS
+        # (set by cibuildwheel to the real target arch) when present.
+        archflags = os.environ.get("ARCHFLAGS")
+        if archflags:
+            is_arm64 = "arm64" in archflags.split()
         return "macos-arm64" if is_arm64 else "macos-x86_64"
     elif system == "Windows":
         return "windows-aarch64" if is_arm64 else "windows-x86_64"
