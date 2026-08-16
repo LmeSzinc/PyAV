@@ -26,9 +26,13 @@ jobs:
           - os: windows-latest
             arch: AMD64
     env:
-      # python.org provides no arm64 installers for Python < 3.9, so the
-      # macOS arm64 build only covers cp39+.
-      CIBW_BUILD: ${{ matrix.arch == 'arm64' && 'cp39-* cp310-* cp311-*' || 'cp37-* cp38-* cp39-* cp310-* cp311-*' }}
+      # cibuildwheel builds cp38 arm64 wheels by cross-compiling with the
+      # x86_64 CPython 3.8.10 installer: python.org ships no arm64 installers
+      # for Python < 3.9, so cibuildwheel installs the x86_64 one and compiles
+      # with ARCHFLAGS=-arch arm64 (the arm64 part cannot be tested, so
+      # cibuildwheel skips those tests automatically). cp37 has no arm64
+      # configuration in cibuildwheel, so the macOS arm64 build covers cp38+.
+      CIBW_BUILD: ${{ matrix.arch == 'arm64' && 'cp38-* cp39-* cp310-* cp311-*' || 'cp37-* cp38-* cp39-* cp310-* cp311-*' }}
       CIBW_ARCHS: ${{ matrix.arch }}
       CIBW_SKIP: cp36-* pp36-* pp38-win* *-musllinux*
       CIBW_BEFORE_ALL_LINUX: yum install -y alsa-lib libxcb
@@ -57,8 +61,10 @@ jobs:
       - name: Set up QEMU
         if: matrix.arch == 'aarch64'
         uses: docker/setup-qemu-action@v3
-      - name: Install Rosetta (x86_64 builds on arm64 runners)
-        if: matrix.os == 'macos-latest' && matrix.arch == 'x86_64'
+      - name: Install Rosetta (x86_64 CPython runs under emulation on arm64 runners)
+        # The arm64 job needs it too: cibuildwheel builds the cp38 arm64 wheel
+        # from the x86_64 CPython 3.8.10 installer, which runs via Rosetta.
+        if: matrix.os == 'macos-latest'
         run: softwareupdate --install-rosetta --agree-to-license || true
       - name: Install XQuartz for libX11 (x86_64 builds on arm64 runners)
         if: matrix.os == 'macos-latest' && matrix.arch == 'x86_64'
