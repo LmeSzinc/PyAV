@@ -74,9 +74,20 @@ jobs:
           # FFmpeg requires GLIBC up to 2.27, beyond the manylinux2014 baseline).
           pip install "cibuildwheel==3.4.1" delvewheel
           if [ "$RUNNER_OS" = "Linux" ]; then
-            CIBW_BUILD="cp38* cp39* cp310*" \
+            # manylinux_2_28 wheels (cp38/39/310)
+            CIBW_BUILD="cp38-manylinux* cp39-manylinux* cp310-manylinux*" \
             CIBW_MANYLINUX_X86_64_IMAGE=quay.io/pypa/manylinux_2_28_x86_64:2026.05.02-2 \
             CIBW_MANYLINUX_AARCH64_IMAGE=quay.io/pypa/manylinux_2_28_aarch64:2026.05.02-2 \
+            cibuildwheel --output-dir dist
+            # musllinux_1_1 wheels (musl 1.1, Alpine < 3.12): the last image
+            # 2024.06.22-2 still ships cp38 and the vendored FFmpeg only
+            # references libc symbols already present in musl 1.1.24.
+            CIBW_BUILD="cp38-musllinux* cp39-musllinux* cp310-musllinux*" \
+            CIBW_MUSLLINUX_X86_64_IMAGE=quay.io/pypa/musllinux_1_1_x86_64:2024.06.22-2 \
+            CIBW_MUSLLINUX_AARCH64_IMAGE=quay.io/pypa/musllinux_1_1_aarch64:2024.06.22-2 \
+            cibuildwheel --output-dir dist
+            # musllinux_1_2 wheels
+            CIBW_BUILD="cp38-musllinux* cp39-musllinux* cp310-musllinux*" \
             CIBW_MUSLLINUX_X86_64_IMAGE=quay.io/pypa/musllinux_1_2_x86_64:2026.05.02-2 \
             CIBW_MUSLLINUX_AARCH64_IMAGE=quay.io/pypa/musllinux_1_2_aarch64:2026.05.02-2 \
             cibuildwheel --output-dir dist
